@@ -107,7 +107,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         		+ "-. Windows / Mac 모두 사용 가능한 툴입니다. \n"
         		+ "-. 현재 실행 운영체제는 "+ os + "입니다. \n"
         		+ "-. v0.1.0 부터 에이닷 Android / iOS 모두 사용 가능합니다.\n"
-        		+ "-. (A. App이 실행중인 상태인 경우에만 동작 가능합니다.)");
+        		+ "-. (A. App이 실행중인 상태인 경우에만 동작 가능합니다.\n\n\n");
 
         
         actionpanel1.add(uniqueid_label); 
@@ -312,7 +312,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	users_data_jsonObject.put("pocIds", pocIdsArray);
     	users_data_jsonObject.put("osTypes", osTypesArray);
     	
-    	Main_jsonObject.put("playServiceId", "playServiceId");
+    	Main_jsonObject.put("playServiceId", "nugu.builtin.apolloprototype");
     	Main_jsonObject.put("pushServiceType", "QA");
     	
     	
@@ -321,7 +321,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	JSONObject directives_data_jsonObject = new JSONObject();
     	directives_data_jsonObject.put("type", "Text.TextSource");
     	directives_data_jsonObject.put("version", "1.7");
-    	directives_data_jsonObject.put("text", command);
+    	directives_data_jsonObject.put("text", CommandText);
     	directives_data_jsonObject.put("token", "test");
     	directives_data_jsonObject.put("playServiceId", "");
     	directivesArray.add(directives_data_jsonObject);
