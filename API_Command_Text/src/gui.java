@@ -63,7 +63,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 	
 	public gui() {
 		
-        JFrame frame = new JFrame("v 0.0.2 / QA팀 / Post Command Text");
+        JFrame frame = new JFrame("v 0.1.0 / QA팀 / A. Post Command Text");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(490, 600);
         textpanel.setLayout(new  BoxLayout(textpanel, BoxLayout.Y_AXIS));
@@ -105,7 +105,9 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         		+ "5. Send 버튼으로 명령어를 전송하세요. \n \n"
         		+ "-. Reset 버튼을 누르면 textarea가 모두 초기화 됩니다. \n"
         		+ "-. Windows / Mac 모두 사용 가능한 툴입니다. \n"
-        		+ "-. 현재 실행 운영체제는 "+ os + "입니다. \n");
+        		+ "-. 현재 실행 운영체제는 "+ os + "입니다. \n"
+        		+ "-. v0.1.0 부터 에이닷 Android / iOS 모두 사용 가능합니다.\n"
+        		+ "-. (A. App이 실행중인 상태인 경우에만 동작 가능합니다.)");
 
         
         actionpanel1.add(uniqueid_label); 
@@ -288,6 +290,53 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	
     	JSONObject Main_jsonObject = new JSONObject();
     	
+    	JSONArray usersArray = new JSONArray();
+    	
+    	JSONObject users_data_jsonObject = new JSONObject();
+    	users_data_jsonObject.put("userId", userID);
+    	
+    	JSONArray deviceIdsArray = new JSONArray();
+    	deviceIdsArray.add(deviceID);
+    	
+    	JSONArray pocIdsArray = new JSONArray();
+    	pocIdsArray.add("app.apollo.agent");
+    	
+    	JSONArray osTypesArray = new JSONArray();
+    	osTypesArray.add("");
+    	
+    	usersArray.add(users_data_jsonObject);
+   
+    	Main_jsonObject.put("users", usersArray);
+    	
+    	users_data_jsonObject.put("deviceIds", deviceIdsArray);
+    	users_data_jsonObject.put("pocIds", pocIdsArray);
+    	users_data_jsonObject.put("osTypes", osTypesArray);
+    	
+    	Main_jsonObject.put("playServiceId", "playServiceId");
+    	Main_jsonObject.put("pushServiceType", "QA");
+    	
+    	
+    	JSONArray directivesArray = new JSONArray();
+    	
+    	JSONObject directives_data_jsonObject = new JSONObject();
+    	directives_data_jsonObject.put("type", "Text.TextSource");
+    	directives_data_jsonObject.put("version", "1.7");
+    	directives_data_jsonObject.put("text", command);
+    	directives_data_jsonObject.put("token", "test");
+    	directives_data_jsonObject.put("playServiceId", "");
+    	directivesArray.add(directives_data_jsonObject);
+    	Main_jsonObject.put("directives", directivesArray);
+    	
+    	JSONObject notificationRequest_data_jsonObject = new JSONObject();
+    	notificationRequest_data_jsonObject.put("shouldSendPush", false);
+    	notificationRequest_data_jsonObject.put("shouldSave", false);
+    	notificationRequest_data_jsonObject.put("shouldSendDirective", true);
+    	Main_jsonObject.put("notificationRequest", notificationRequest_data_jsonObject);
+    	
+    	System.out.println(Main_jsonObject);
+    	/*
+    	JSONObject Main_jsonObject = new JSONObject();
+    	
     	JSONArray directivesArray = new JSONArray();
     	
     	JSONObject payload_data = new JSONObject();
@@ -316,7 +365,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	
     	Main_jsonObject.put("directives", directivesArray);
     	Main_jsonObject.put("deviceId", deviceID);  
-
+    	*/
     	
     	//System.out.println(Main_jsonObject);
     	
@@ -325,7 +374,43 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	// form parameters
     	@SuppressWarnings("deprecation")
 		RequestBody body = RequestBody.create(JSON, Main_jsonObject.toString());
-
+    	
+    	if (Server.equals("PRD")) {
+    		Request request = new Request.Builder()
+                    .url("https://eg.sktapollo.com/api/v1/push") //PRD directive URL
+                    .addHeader("Auth-Token", "xZRypHEPM8RLl5KaPJnwtQ==")
+                    .post(body)
+                    .build();
+    		
+    	Response response = httpClient.newCall(request).execute();
+    	String userString = response.body().string();
+    	System.out.println(userString);
+    	
+    	if (userString.contentEquals("")) {
+    		result = "result : OK";
+    	} else {
+    		result = userString;
+    	}
+           
+    	} else if (Server.equals("STG")) {
+    		Request request = new Request.Builder()
+                    .url("https://stg-eg.sktapollo.com/api/v1/push") //STG directive URL
+                    .addHeader("Auth-Token", "xZRypHEPM8RLl5KaPJnwtQ==")
+                    .post(body)
+                    .build();
+    		
+    		Response response = httpClient.newCall(request).execute();
+        	String userString = response.body().string();
+        	System.out.println(userString);
+        	
+        	if (userString.contentEquals("")) {
+        		result = "result : OK";
+        	} else {
+        		result = userString;
+        	}
+    	}
+    	
+    	/*
     	if (Server.equals("PRD")) {
     		Request request = new Request.Builder()
                     .url("https://api.sktnugu.com/v1/setting/deviceGateway/directive") //PRD directive URL
@@ -363,6 +448,6 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	} else {
         		result = userString;
         	}
-    	}
+    	} */
 	}
 }
