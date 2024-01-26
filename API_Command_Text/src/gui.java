@@ -39,15 +39,23 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 	JRadioButton radio1[] = new JRadioButton[2];
     String radio_name1[] = {"STG", "PRD"}; 
     
+    String[] serverList = {"STG", "PRD"};
+    JComboBox<String> serverCombo = new JComboBox<>(serverList);
+
+    String[] agentIdList = {"main", "music"};
+    JComboBox<String> agentIdCombo= new JComboBox<>(agentIdList);
+   
+    
     BufferedOutputStream bs1 = null;
     BufferedOutputStream bs2 = null;
     
     String server1 = null;
+    String agentId = null;
     String result;
     String os;
     String path;
     
-    JFrame frame = new JFrame("v 0.2.0 / QA팀 / A. Post Command Text");
+    JFrame frame = new JFrame("v 0.3.0 / QA팀 / A. Post Command Text");
     
     JPanel actionpanel1 = new JPanel();
     JPanel actionpanel2 = new JPanel();
@@ -57,16 +65,16 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     JScrollPane scrollPane = new JScrollPane(textarea);
     
     JLabel command_label = new JLabel(" Text");
-    JTextField command_field = new JTextField(20);
-    JLabel uniqueid_label1 = new JLabel("UID");
-    JTextField uniqueid_field1 = new JTextField(20);
+    JTextField command_field = new JTextField(23);
+    JLabel uniqueid_label1 = new JLabel("userId");
+    JTextField uniqueid_field1 = new JTextField(15);
     JButton save1 = new JButton("Save");
     JButton send = new JButton("Send");
     JButton reset = new JButton("Reset");
     JButton plus = new JButton("+");
     
-    JLabel uniqueid_label2 = new JLabel("UID");
-    JTextField uniqueid_field2 = new JTextField(20);
+    JLabel uniqueid_label2 = new JLabel("userId");
+    JTextField uniqueid_field2 = new JTextField(15);
     JButton save2 = new JButton("Save");
     JLabel _blank_label = new JLabel("              ");
     
@@ -78,7 +86,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 		
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setSize(494, 550);
+        frame.setSize(474, 550);
         //frame.pack();
         frame.setVisible(true);
         
@@ -135,19 +143,24 @@ public class gui extends JFrame implements ActionListener, KeyListener {
   	    }
 
         textarea.setText("사용법 \n"
-        		+ "1. Unique id를 입력해주세요. \n"
+        		+ "1. userId를 입력해주세요. \n"
         		+ "2. 서버를 선택해주세요. \n"
-        		+ "3. Save버튼으로 Unique id 유효값을 확인과 값을 [저장]하세요. \n"
-        		+ "   (Unique id는 여러개를 저장하여도 마지막 저장값 1개만 저장됩니다.) \n"
-        		+ "4. Text Field에 명렁어를 입력해주세요. \n"
-        		+ "5. Send 버튼으로 명령어를 전송하세요. \n \n"
+        		+ "3. 대화방를 선택해주세요. \n"
+        		+ "   (main : 메인 에이전트 대화방) \n"
+        		+ "   (music : 뮤직 플러그인 대화방) \n"
+        		+ "4. Save버튼으로 userId 유효값을 확인과 함께 '서버''대화방' 값을 [저장]하세요. \n"
+        		+ "   (userId는 여러개를 저장하여도 마지막 저장값 1개만 저장됩니다.) \n"
+        		+ "5. Text Field에 명렁어를 입력해주세요. \n"
+        		+ "6. Send 버튼으로 명령어를 전송하세요. \n \n"
         		+ "-. Reset 버튼을 누르면 textarea가 모두 초기화 됩니다. \n"
         		+ "-. Windows / Mac 모두 사용 가능한 툴입니다. \n"
         		+ "-. 현재 실행 운영체제는 "+ os + "입니다. \n"
-        		+ "-. v0.1.0 부터 에이닷 Android / iOS 모두 사용 가능합니다.\n"
-        		+ "-. (A. App이 실행중인 상태인 경우에만 동작 가능합니다.\n\n"
+        		+ "-. v0.3.0 부터 에이닷 (2.7.0 버전 이상) Android / iOS 모두 사용 가능합니다.\n"
+        		+ "-. (>>iOS는 구조상으로 전송 대화가 대화방 재 접근시 나타납니다.)\n"
+        		+ "-. (>>명령어의 결과는 바로 확인할 수 있습니다.)\n"
+        		+ "-. (A. App이 실행중인 상태인 경우에만 동작 가능합니다.)\n\n"
         		+ "-. [+] 버튼을 통해서 PoC 추가가 가능합니다.\n"
-       			+ "-. 두번째 UID 입력시 2개의 Device에 동시 명령어 전송 가능합니다.\n"
+       			+ "-. 두번째 userId 입력시 2개의 Device에 동시 명령어 전송 가능합니다.\n"
         		+ "-. [-] 버튼 동작으로 다시 1개의 Device에서만 명령어 전송이 가능합니다.\n\n\n");
         
 
@@ -161,13 +174,19 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 		
 		actionpanel1.revalidate();
 		actionpanel1.repaint();
-        
+        /*
         for(int i=0; i<radio1.length; i++){
             radio1[i] = new JRadioButton(radio_name1[i]);
             group1.add(radio1[i]);
             actionpanel1.add(radio1[i]);
             radio1[i].addActionListener(this);
         }
+        radio1[0].setSelected(true);
+        radio1[1].setSelected(false);
+        server1 = "STG";
+        */
+        actionpanel1.add(serverCombo);
+        actionpanel1.add(agentIdCombo);
         actionpanel1.add(plus);
         
         actionpanel2.add(command_label); 
@@ -184,9 +203,6 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         send.addActionListener(this);
         command_field.addKeyListener(this);
         
-        radio1[0].setSelected(true);
-        radio1[1].setSelected(false);
-        server1 = "STG";
 
         //Adding Components to the frame.
         frame.getContentPane().add(BorderLayout.NORTH, actionpanel1);
@@ -196,8 +212,8 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 
         Date today = new Date();
         
-        Date date1 = this.getDate(2023, 1, 1);
-        Date date2 = this.getDate(2023, 6, 30);
+        Date date1 = this.getDate(2024, 1, 1);
+        Date date2 = this.getDate(2024, 6, 30);
         System.out.println(today);
         System.out.println(date1);
         System.out.println(date2);
@@ -238,15 +254,16 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent e) {
 		String s = e.getActionCommand();
 		
-        if(s.equals(radio1[0].getText())){
+		
+        if(e.getSource()==reset) {
+        	textarea.setText("");
+        } /*else if(s.equals(radio1[0].getText())){
         	addLog("▷ 선택 서버 : "+radio1[0].getText());
         	server1 = "STG";
         } else if(s.equals(radio1[1].getText())){
         	addLog("▷ 선택 서버: "+radio1[1].getText());
         	server1 = "PRD";
-        }  else if(e.getSource()==reset) {
-        	textarea.setText("");
-        } else if (e.getSource()==plus) {
+        }*/ else if (e.getSource()==plus) {
         	if (i == 1) {
         		Dimension currentSize1 = actionpanel1.getPreferredSize();
             	actionpanel1.setPreferredSize(new Dimension(currentSize1.width - 0, currentSize1.height + 30));
@@ -317,23 +334,39 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         } else if (e.getSource()==save1) {
         	String str = uniqueid_field1.getText();
         	
+        	String selectedServerValue = (String) serverCombo.getSelectedItem();
+            System.out.println("Selected: " + selectedServerValue);
+            addLog("▷ 선택 서버 : "+selectedServerValue);
+            server1 = selectedServerValue;
+            
+            String selectedAgentidValue = (String) agentIdCombo.getSelectedItem();
+            System.out.println("Selected: " + selectedAgentidValue);
+            
+            if (selectedAgentidValue == "main") {
+            	addLog("▷ 선택 대화방 : 메인 에이전트 대화방 "+selectedAgentidValue);
+            } else if (selectedAgentidValue == "music") {
+            	addLog("▷ 선택 대화방 : 뮤직 플러그인 대화방 "+selectedAgentidValue);
+            } else {
+            	addLog("▷ 선택 대화방 : "+selectedAgentidValue);
+            }
+ 
+            agentId = selectedAgentidValue;
+        	
         	if (str.length() == 0) {
         		String userid = " ";
-        		String deviceid = " ";
-        		addLog("▷ user id 1 : 값이 빈값으로 저장됩니다.");
-        		addLog("▷ user id 1 : " + userid +" / device id : "+ deviceid);
-        	} else if(str.length() > 40) {
-        		addLog("▷ user id 1 : unique id_1 오류 / nunique id 40자리를 다시 확인해주세요.");
-        		JOptionPane.showMessageDialog(null,"unique id_1 오류 \nunique id 40자리를 다시 확인해주세요.");
-        	} else if (str.length() < 40) {
-        		addLog("▷ user id 1 : unique id_1 오류 / nunique id 40자리를 다시 확인해주세요.");
+        		addLog("▷ userId 1 : 값이 빈값으로 저장됩니다.");
+        		addLog("▷ userId 1 : " + userid);
+        	} else if(str.length() > 20) {
+        		addLog("▷ userId 1 : userId_1 오류 / userId 20자리를 다시 확인해주세요.");
+        		JOptionPane.showMessageDialog(null,"userId_1 오류 \n userId 20자리를 다시 확인해주세요.");
+        	} else if (str.length() < 20) {
+        		addLog("▷ userId 1 : userId_1 오류 /n userId 20자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_1 오류 \nunique id 40자리를 다시 확인해주세요.");
         	//} else if (!(str.contains("APL"))) {
         		//JOptionPane.showMessageDialog(null,"unique id_1 오류 \n올바른 unique id를 입력해주세요.");
         	} else {
         		String userid = str.substring(0, 20);
-        		String deviceid = str.substring(20, 40);
-        		addLog("▷ user id 1 : " + userid +" / device id : "+ deviceid);
+        		addLog("▷ userId 1 : " + userid);
         	}
         	
         	try {
@@ -372,20 +405,19 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	if (str.length() == 0) {
         		String userid = " ";
         		String deviceid = " ";
-        		addLog("▷ user id 2 : 값이 빈값으로 저장됩니다.");
-        		addLog("▷ user id 2 : " + userid +" / device id : "+ deviceid);
+        		addLog("▷ userId 2 : 값이 빈값으로 저장됩니다.");
+        		addLog("▷ userId 2 : " + userid);
         	}
-        	else if(str.length() > 40) {
-        		JOptionPane.showMessageDialog(null,"unique id_2 오류 \nunique id 40자리를 다시 확인해주세요.");
-        	} else if (str.length() < 40) {
-        		addLog("▷ user id 2 : unique id_2 오류 / nunique id 40자리를 다시 확인해주세요.");
+        	else if(str.length() > 20) {
+        		JOptionPane.showMessageDialog(null,"userId_2 오류 \n userId 20자리를 다시 확인해주세요.");
+        	} else if (str.length() < 20) {
+        		addLog("▷ userId 2 : userId_2 오류 /n userId 20자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_2 오류 \nunique id 40자리를 다시 확인해주세요.");
         	//} else if (!(str.contains("APL"))) {
         		//JOptionPane.showMessageDialog(null,"unique id_2 오류 \n올바른 unique id를 입력해주세요.");
         	} else {
         		String userid = str.substring(0, 20);
-        		String deviceid = str.substring(20, 40);
-        		addLog("▷ user id 2 : " + userid +" / device id : "+ deviceid);
+        		addLog("▷ userId 2 : " + userid);
         	}
         	
         	try {
@@ -433,28 +465,27 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	if (text.length() == 0){
         		addLog("▷ 발화문 : [] / 전송결과 : 명렁어를 입력해주세요.");
         	} else if (str1.contains("unique_id")) {
-        		addLog("▷ user id 1 : nunique id 40자리를 다시 입력해주세요.");
-        	} else if(str1.length() > 40) {
-        		addLog("▷ user id 1 : nunique id 40자리를 다시 확인해주세요.");
+        		addLog("▷ userId 1 : userId 20자리를 다시 입력해주세요.");
+        	} else if(str1.length() > 20) {
+        		addLog("▷ userId 1 : userId 40자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_1오류 \nunique id 40자리를 다시 확인해주세요.");
-        	} else if (str1.length() > 0 && str1.length() < 40) {
-        		addLog("▷ user id 1 : nunique id 40자리를 다시 확인해주세요.");
+        	} else if (str1.length() > 0 && str1.length() < 20) {
+        		addLog("▷ userId 1 : userId 20자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_1 오류 \nunique id 40자리를 다시 확인해주세요.");
         	} else if (str1.length() == 0) {
-            		addLog("▷ user id 1 : nunique id 40자리를 입력해주세요.");
+            		addLog("▷ userId 1 : userId 20자리를 입력해주세요.");
     		//} else if (!(str1.contains("APL"))) {
         		//JOptionPane.showMessageDialog(null,"unique id_1 오류 \n올바른 unique id를 입력해주세요.");
         	} else {
         		String userid1 = str1.substring(0, 20);
-        		String deviceid1 = str1.substring(20, 40);
 	
         		if(server1 == "STG"){
         			try {
-						if (deviceid1 != null) {
-							sendPost(text, userid1, deviceid1, "STG");
+						if (userid1 != null) {
+							sendPost(text, userid1, "STG", agentId);
 							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : "+ result);
 						} else {
-							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : uniqueid1 저장 오류");
+							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : userId1 저장 오류");
 						} 
 
 					} catch (Exception e1) {
@@ -462,11 +493,11 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 					}
         		} else if (server1 == "PRD"){
         			try {
-        				if (deviceid1 != null) {
-							sendPost(text, userid1, deviceid1, "PRD");
+        				if (userid1 != null) {
+							sendPost(text, userid1, "PRD", agentId);
 							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : "+ result);
 						} else {
-							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : uniqueid1 저장 오류");
+							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : userId1 저장 오류");
 						}
 
         			
@@ -483,11 +514,11 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	} else if (str2.contains("unique_id")) {
         		userid2 = "";
         		deviceid2 = "";
-        	} else if(str2.length() > 40) {
-        		addLog("▷ user id 2 : unique id_2 오류 / nunique id 40자리를 다시 확인해주세요.");
+        	} else if(str2.length() > 20) {
+        		addLog("▷ userId 2 : unique id_2 오류 /n userId 20자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_2오류 \nunique id 40자리를 다시 확인해주세요.");
-        	} else if (str2.length() > 0 && str2.length() < 40) {
-        		addLog("▷ user id 2 : unique id_2 오류 / nunique id 40자리를 다시 확인해주세요.");
+        	} else if (str2.length() > 0 && str2.length() < 20) {
+        		addLog("▷ userId 2 : unique id_2 오류 /n userId 20자리를 다시 확인해주세요.");
         		//JOptionPane.showMessageDialog(null,"unique id_2 오류 \nunique id 40자리를 다시 확인해주세요.");
         	//} else if (str2.length() == 0 ) {
         		//addLog("▷ user id 2 : unique id_2 오류 / nunique id 40자리를 입력해주세요.");
@@ -496,12 +527,11 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	} else {
 	
 				userid2 = str2.substring(0, 20);
-        		deviceid2 = str2.substring(20, 40);
 
         		if(server1 == "STG"){
         			try {
-						if (deviceid2 != null) {
-							sendPost(text, userid2, deviceid2, "STG");
+						if (userid2 != null) {
+							sendPost(text, userid2, "STG", agentId);
 							addLog("▷ user2 발화문 : ["+text+"] / 전송결과 : "+ result);
 						} else {
 							addLog("▷ user2 발화문 : ["+text+"] / 전송결과 : uniqueid2 저장 오류");
@@ -512,8 +542,8 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 					}
         		} else if (server1 == "PRD"){
         			try {		
-        				if (deviceid2 != null) {
-							sendPost(text, userid2, deviceid2, "PRD");
+        				if (userid2 != null) {
+							sendPost(text, userid2, "PRD", agentId);
 							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : "+ result);
 						} else {
 							addLog("▷ user1 발화문 : ["+text+"] / 전송결과 : uniqueid2 저장 오류");
@@ -527,7 +557,8 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	
         }
 	}
-	
+
+
 	void addLog(String log) {
 		textarea.append(log + "\n");  // 로그 내용을 JTextArea 위에 붙여주고
 		textarea.setCaretPosition(textarea.getDocument().getLength());  // 맨아래로 스크롤한다.
@@ -542,9 +573,9 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 
 	
 	
-	void sendPost(String command, String userID, String deviceID, String Server) throws Exception {
+	void sendPost(String command, String userID, String Server, String agentId) throws Exception {
     	
-    	System.out.println("sendPost 발동 옵션: | 발화문 :  "+ command +" | 서버 : "+ Server);
+    	System.out.println("sendPost 발동 옵션: | 발화문 :  "+ command +" | 서버 : "+ Server + " | 대화방 : "+ agentId);
     	
     	String CommandText = command;
     	
@@ -555,22 +586,14 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	JSONObject users_data_jsonObject = new JSONObject();
     	users_data_jsonObject.put("userId", userID);
     	
-    	JSONArray deviceIdsArray = new JSONArray();
-    	deviceIdsArray.add(deviceID);
-    	
     	JSONArray pocIdsArray = new JSONArray();
     	pocIdsArray.add("app.apollo.agent");
-    	
-    	JSONArray osTypesArray = new JSONArray();
-    	osTypesArray.add("");
     	
     	usersArray.add(users_data_jsonObject);
    
     	Main_jsonObject.put("users", usersArray);
     	
-    	users_data_jsonObject.put("deviceIds", deviceIdsArray);
     	users_data_jsonObject.put("pocIds", pocIdsArray);
-    	users_data_jsonObject.put("osTypes", osTypesArray);
     	
     	Main_jsonObject.put("playServiceId", "nugu.builtin.apolloprototype");
     	Main_jsonObject.put("pushServiceType", "QA");
@@ -584,6 +607,9 @@ public class gui extends JFrame implements ActionListener, KeyListener {
     	directives_data_jsonObject.put("text", CommandText);
     	directives_data_jsonObject.put("token", "test");
     	directives_data_jsonObject.put("playServiceId", "");
+    	JSONObject service_data_jsonObject = new JSONObject();
+    	service_data_jsonObject.put("agentId", agentId);
+    	directives_data_jsonObject.put("service", service_data_jsonObject);
     	directivesArray.add(directives_data_jsonObject);
     	Main_jsonObject.put("directives", directivesArray);
     	
