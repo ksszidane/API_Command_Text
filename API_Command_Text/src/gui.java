@@ -82,10 +82,22 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 	
 	public gui() {
 		
+		os = System.getProperty("os.name").toLowerCase();
+        path = System.getProperty("user.home").toLowerCase();
+        String filePath1 = null;
+        String filePath2 = null;
+		
 		i = 1;
 		
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        
+        if (os.contains("win")) {
+        	frame.setSize(474, 550);
+    	} else if (os.contains("mac")) {
+    		frame.setSize(574, 550);
+    	}
+        
         frame.setSize(474, 550);
         //frame.pack();
         frame.setVisible(true);
@@ -95,10 +107,6 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
-        os = System.getProperty("os.name").toLowerCase();
-        path = System.getProperty("user.home").toLowerCase();
-        String filePath1 = null;
-        String filePath2 = null;
         
         try {
  	       // 바이트 단위로 파일읽기
@@ -142,7 +150,7 @@ public class gui extends JFrame implements ActionListener, KeyListener {
   		e.getStackTrace();
   	    }
 
-        textarea.setText("사용법 \n"
+        textarea.setText("사용법. \n"
         		+ "1. userId를 입력해주세요. \n"
         		+ "2. 서버를 선택해주세요. \n"
         		+ "3. 대화방를 선택해주세요. \n"
@@ -373,14 +381,14 @@ public class gui extends JFrame implements ActionListener, KeyListener {
 
         		if (os.contains("win")) {
         			if (str.length() == 0) {
-        				uniqueid_field1.setText("unique_id");
+        				uniqueid_field1.setText("userId");
         				str = uniqueid_field1.getText();
         			}
             		bs1 = new BufferedOutputStream(new FileOutputStream("C:/UID1.txt"));
             		bs1.write(str.getBytes()); 
             	} else if (os.contains("mac")) {
             		if (str.length() == 0) {
-            			uniqueid_field1.setText("unique_id");
+            			uniqueid_field1.setText("userId");
         				str = uniqueid_field1.getText();
         			}
             		bs1 = new BufferedOutputStream(new FileOutputStream(path+"/UID1.txt"));
@@ -423,14 +431,14 @@ public class gui extends JFrame implements ActionListener, KeyListener {
         	try {
         		if (os.contains("win")) {
         			if (str.length() == 0) {
-        				uniqueid_field2.setText("unique_id");
+        				uniqueid_field2.setText("userId");
         				str = uniqueid_field2.getText();
         			}
         			bs2 = new BufferedOutputStream(new FileOutputStream("C:/UID2.txt"));
             		bs2.write(str.getBytes()); 
             	} else if (os.contains("mac")) {
             		if (str.length() == 0) {
-            			uniqueid_field2.setText("unique_id");
+            			uniqueid_field2.setText("userId");
         				str = uniqueid_field2.getText();
         			}
             		bs2 = new BufferedOutputStream(new FileOutputStream(path+"/UID2.txt"));
